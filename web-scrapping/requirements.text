@@ -1,0 +1,12 @@
+pip install selenium
+pip install python-dateutil
+pip install dateparser
+pip install mysql-connector-python
+pip install mysql
+pip install imbalanced-learn
+pip install tqdm
+pip install pandas numpy textblob nltk scikit-learn langdetect
+pip install emoji
+pip install PySastrawi
+pip install textstat
+pip install xgboost
