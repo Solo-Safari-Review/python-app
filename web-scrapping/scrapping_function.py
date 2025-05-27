@@ -6,12 +6,19 @@ def getUsername(review):
 
 def getSubUserInfo(review):
     sub_user_info = review.find_element(By.CLASS_NAME, "RfnDt").text
-    sub_user_info = sub_user_info.split(" · ")
-    is_local_guide = 1 if "Local Guide" in sub_user_info else 0
-    if is_local_guide == 1:
-        reviewer_number_of_reviews = sub_user_info[1].rstrip(' ulasan')
+
+    if sub_user_info is not None:
+        sub_user_info = sub_user_info.split(" · ")
+        is_local_guide = 1 if "Local Guide" in sub_user_info else 0
+        if is_local_guide == 1:
+            if "ulasan" in sub_user_info[0]:
+                reviewer_number_of_reviews = sub_user_info[1].rstrip(' ulasan')
+        else:
+            if "ulasan" in sub_user_info[0]:
+                reviewer_number_of_reviews = sub_user_info[0].rstrip(' ulasan')
     else:
-        reviewer_number_of_reviews = sub_user_info[0].rstrip(' ulasan')
+        is_local_guide = 0
+        reviewer_number_of_reviews = 0
 
     return is_local_guide, reviewer_number_of_reviews
 

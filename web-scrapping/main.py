@@ -31,24 +31,21 @@ maps_url = f"https://www.google.com/maps/search/solo+safari/"
 
 driver.get(maps_url)
 
-try:
-    # click sorting button
-    sorting_button = WebDriverWait(driver, 10).until(
-    EC.element_to_be_clickable((By.CSS_SELECTOR, "[data-value='Urutkan']"))
-    )
-    sorting_button.click()
+# click sorting button
+sorting_button = WebDriverWait(driver, 10).until(
+EC.element_to_be_clickable((By.CSS_SELECTOR, "[data-value='Urutkan']"))
+)
+sorting_button.click()
 
-    # wait for the sorting menu
-    WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.CSS_SELECTOR, "[id='action-menu']"))
-    )
-    menu_button = driver.find_element(By.CSS_SELECTOR, "[id='action-menu']")
+# wait for the sorting menu
+WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.CSS_SELECTOR, "[id='action-menu']"))
+)
+menu_button = driver.find_element(By.CSS_SELECTOR, "[id='action-menu']")
 
-    # click newest button
-    newest_button = menu_button.find_element(By.CSS_SELECTOR, "[data-index='1']")
-    newest_button.click()
-except Exception as e:
-    print(f"Error: {e}")
+# click newest button
+newest_button = menu_button.find_element(By.CSS_SELECTOR, "[data-index='1']")
+newest_button.click()
 
 # wait for the reviews fully loaded
 WebDriverWait(driver, 10).until(
@@ -107,7 +104,7 @@ while not on_target:
             try:
                 time = getTime(review)
             except Exception as e:
-                print(f"Error time: {e}")
+                continue
 
             if time >= before_timestamp: continue
             if time < target_timestamp: on_target = True; break
@@ -117,7 +114,7 @@ while not on_target:
                 content = getReviewText(review)
                 raw_content = content
             except Exception as e:
-                print(f"Error content: {e}")
+                continue
 
             if content is None: continue
 
@@ -125,55 +122,56 @@ while not on_target:
             try:
                 username = getUsername(review)
             except Exception as e:
-                print(f"Error username: {e}")
+                continue
 
             # get local guide, total reviews
             try:
                 is_local_guide, reviewer_number_of_reviews = getSubUserInfo(review)
             except Exception as e:
-                print(f"Error sub_user_info: {e}")
+                is_local_guide = 0
+                reviewer_number_of_reviews = 0
 
             # get rating
             try:
                 rating = getRating(review)
             except Exception as e:
-                print(f"Error rating: {e}")
+                continue
 
             # get likes
             try:
                 likes = getLikes(review)
             except Exception as e:
-                print(f"Error likes: {e}")
+                likes = 0
 
             # get images
             try:
                 image_count = getImageCount(review)
             except Exception as e:
-                print(f"Error image_count: {e}")
+                image_count = 0
 
             # get review context
             try:
                 review_context_1, review_context_2, review_context_3, review_context_4 = getReviewContexts(review)
             except Exception as e:
-                print(f"Error review_contexts: {e}")
+                continue
 
             # get answer
             try:
                 answer = getAnswer(review)
             except Exception as e:
-                print(f"Error answer: {e}")
+                continue
 
             # get is_extreme_review
             try:
                 is_extreme_review = getIsExtremeReview(rating)
             except Exception as e:
-                print(f"Error is_extreme_review: {e}")
+                continue
 
             # predict rating
             # try:
             #     predicted_rating = rating_xgb_model.predict(content)
             # except Exception as e:
-            #     print(f"Error predicted_rating: {e}")
+            #     continue
 
             data_reviews.append({
                 "username": username,
@@ -225,14 +223,13 @@ for item in data_reviews:
 
 if data_reviews: # Ensure data_reviews is not empty before trying to dump
     try:
+        # save to database
+        to_db(data_reviews)
+
         output = {
-            "reviews": data_reviews,
             "total_reviews": len(data_reviews),
         }
         print(json.dumps(output, default=json_datetime_converter, indent=4, ensure_ascii=False)) # indent for pretty print, optional
-
-        # save to database
-        to_db(data_reviews)
 
     except TypeError as e:
         # Fallback or error representation if serialization fails for an unexpected reason
