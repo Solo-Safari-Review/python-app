@@ -11,6 +11,8 @@ from preprocessing import preprocessing
 from get_attributes import *
 from scrapping_function import *
 import json, joblib, os, time, mysql.connector
+from datetime import datetime, date
+import pandas as pd
 
 # directory for the model
 PYTHON_APP_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,6 +22,7 @@ PREDICT_RATING_DIR = os.path.join(MODELS_DIR, "predict-rating")
 
 # Load model
 rating_xgb_model = joblib.load(os.path.join(PREDICT_RATING_DIR, "rating_xgboost.pkl"))
+helpful_model = joblib.load(os.path.join(PREDICT_HELPFUL_DIR, "model_helpfulness_final.pkl"))
 
 # Initialize WebDriver
 options = webdriver.ChromeOptions()
@@ -220,6 +223,21 @@ for item in data_reviews:
     item['contains_number'] = contains_number(item['content'])
     item['review_length'] = get_length(item['content'])
     item['is_weekend'] = is_weekend(item['time'])
+
+    # predict helpfulness
+    try:
+        helpful_data = pd.DataFrame([{
+            'stars': item['rating'],
+            'review_length': item['review_length'],
+            'image_count': item['image_count'],
+            'review_age_days': (datetime.now() - item['time']).days,
+            'is_extreme_rating': item['is_extreme_review'],
+            'is_weekend': item['is_weekend'],
+            'reviewerNumberOfReviews': item['reviewer_number_of_reviews'],
+        }])
+        item['is_helpful'] = int(helpful_model.predict(helpful_data)[0])
+    except Exception as e:
+        item['is_helpful'] = 0
 
 if data_reviews: # Ensure data_reviews is not empty before trying to dump
     try:
