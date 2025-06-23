@@ -7,11 +7,11 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.actions.wheel_input import ScrollOrigin
 from datetime import datetime
-from prep_func import *
-from save import to_db
-from preprocessing import preprocessing
-from get_attributes import *
-from scrapping_function import *
+from web_scraping.prep_func import *
+from web_scraping.save import to_db
+from web_scraping.get_attributes import *
+from web_scraping.scrapping_function import *
+from web_scraping.preprocessing import *
 import json, joblib, os, time, mysql.connector
 import pandas as pd
 
