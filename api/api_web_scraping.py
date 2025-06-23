@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from web_scrapping.main import run_scraping
+from web_scraping.main import run_scraping
 
 router = APIRouter()
 
