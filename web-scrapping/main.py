@@ -11,7 +11,7 @@ from preprocessing import preprocessing
 from get_attributes import *
 from scrapping_function import *
 import json, joblib, os, time, mysql.connector
-from datetime import datetime, date
+from datetime import datetime
 import pandas as pd
 
 # directory for the model
@@ -26,7 +26,12 @@ helpful_model = joblib.load(os.path.join(PREDICT_HELPFUL_DIR, "model_helpfulness
 
 # Initialize WebDriver
 options = webdriver.ChromeOptions()
-# options.add_argument("--headless=new")  # Run without open the browser
+
+# Coba headless di vps
+options.add_argument("--headless=new")
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-dev-shm-usage")
+options.add_argument("--window-size=1920,1080")
 driver = webdriver.Chrome(options=options)
 
 # URL Google Maps
