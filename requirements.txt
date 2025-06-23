@@ -3,7 +3,6 @@ uvicorn[standard]
 selenium
 dateparser
 mysql-connector-python
-mysql
 imbalanced-learn
 tqdm
 pandas
