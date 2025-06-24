@@ -1,8 +1,8 @@
-from fastapi import APIRouter
+from fastapi import FastAPI
 from web_scraping.main import run_scraping
 
-router = APIRouter()
+app = FastAPI()
 
-@router.get("/run-scraping")
+@app.get("/run-scraping")
 def trigger_scraping():
     return run_scraping()
