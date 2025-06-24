@@ -1,5 +1,5 @@
 from selenium.webdriver.common.by import By
-from prep_func import *
+from web_scraping.prep_func import *
 
 def getUsername(review):
     return review.find_element(By.CLASS_NAME, "d4r55").text
