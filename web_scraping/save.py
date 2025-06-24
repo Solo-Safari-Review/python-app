@@ -1,10 +1,10 @@
-import csv, mysql.connector
+import csv, mysql.connector, os
 
 DB_CONFIG = {
-    "host": "localhost",
-    "database": "solo-safari-review",
-    "user": "root",
-    "password": "",
+    "host": os.getenv("DB_HOST"),
+    "database": os.getenv("DB_NAME"),
+    "user": os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASSWORD"),
 }
 
 def to_csv(data):
