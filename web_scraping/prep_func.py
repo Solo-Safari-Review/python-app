@@ -5,7 +5,7 @@ def time_to_timestamp(time):
     if isinstance(time, list):
         times = []
         for item in time:
-            times.append(dateparser.parse(item.text))
+            times.append(dateparser.parse(item if isinstance(item, str) else item.text))
         return times
 
     else:

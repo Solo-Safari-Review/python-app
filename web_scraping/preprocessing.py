@@ -98,22 +98,25 @@ def lemmatize_text(text):
 
 # Fungsi utama preprocessing
 def preprocessing(text):
-    slang_dict = load_slang_dicts()
-    indonesian_vocab = load_indonesian_vocab()
+    if isinstance(text, str):
+        slang_dict = load_slang_dicts()
+        indonesian_vocab = load_indonesian_vocab()
 
-    clean_text = text.lower()
-    clean_text = emoji.replace_emoji(clean_text, replace=' ')
-    clean_text = handle_indonesian_duplicates(clean_text)
-    clean_text = re.sub(r"(\w+)'s\b", r"\1", clean_text)
-    clean_text = replace_slang_with_formal(clean_text, slang_dict)
-    clean_text = replace_slang_with_formal(clean_text, slang_dict)
-    clean_text = re.sub(r'\n+', ' ', clean_text)
-    clean_text = re.sub(r'[^\w\s0-9]', ' ', clean_text)  # Menjaga angka
-    clean_text = normalize_repeated_chars(clean_text)
-    clean_text = re.sub(r'\s+', ' ', clean_text).strip()
+        clean_text = text.lower()
+        clean_text = emoji.replace_emoji(clean_text, replace=' ')
+        clean_text = handle_indonesian_duplicates(clean_text)
+        clean_text = re.sub(r"(\w+)'s\b", r"\1", clean_text)
+        clean_text = replace_slang_with_formal(clean_text, slang_dict)
+        clean_text = replace_slang_with_formal(clean_text, slang_dict)
+        clean_text = re.sub(r'\n+', ' ', clean_text)
+        clean_text = re.sub(r'[^\w\s0-9]', ' ', clean_text)  # Menjaga angka
+        clean_text = normalize_repeated_chars(clean_text)
+        clean_text = re.sub(r'\s+', ' ', clean_text).strip()
 
-    # Stopword removal dan lemmatization
-    clean_text = remove_stopwords(clean_text)
-    clean_text = lemmatize_text(clean_text)
+        # Stopword removal dan lemmatization
+        clean_text = remove_stopwords(clean_text)
+        clean_text = lemmatize_text(clean_text)
 
-    return clean_text
+        return clean_text
+    else:
+        return ""

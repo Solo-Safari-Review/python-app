@@ -35,7 +35,7 @@ def run_scraping():
         # Headless options
         options = Options()
         options.binary_location = "/usr/bin/google-chrome"
-        options.add_argument('--headless=new')  # atau 'new' di Chrome >= 109: '--headless=new'
+        options.add_argument('--headless=new')
         options.add_argument('--no-sandbox')
         options.add_argument('--disable-gpu')
         options.add_argument('--disable-dev-shm-usage')
@@ -96,7 +96,15 @@ def run_scraping():
         while not on_target:
             while not target_found:
                 ActionChains(driver).scroll_from_origin(scroll_origin, 0, 1500).perform()
-                times = time_to_timestamp(driver.find_elements(By.CLASS_NAME, "rsqaWe"))
+                time_list = driver.find_elements(By.CLASS_NAME, "rsqaWe");
+                cleaned_time_list = []
+                for time in time_list:
+                    if "Diedit" in time.text:
+                        cleaned_time = time.text.replace("Diedit ", "")
+                        cleaned_time_list.append(cleaned_time)
+                    else:
+                        cleaned_time_list.append(time.text)
+                times = time_to_timestamp(cleaned_time_list)
                 if any(time < target_timestamp for time in times): target_found = True
 
             reviews = driver.find_elements(By.CLASS_NAME, "jJc9Ad")
@@ -140,8 +148,6 @@ def run_scraping():
 
         driver.quit()
 
-        data_reviews.reverse()
-
         # filter berdasarkan username terakhir
         if last_username:
             filtered = []
@@ -150,9 +156,11 @@ def run_scraping():
                 if r['username'] == last_username:
                     passed_last = True
                     continue
-                if passed_last:
+                if passed_last is False:
                     filtered.append(r)
             data_reviews = filtered
+
+        data_reviews.reverse()
 
         # preprocessing dan fitur tambahan
         for item in data_reviews:
@@ -187,7 +195,10 @@ def run_scraping():
                 "total_reviews": len(data_reviews),
             }
         else:
-            return {"status": "no-new-review"}
+            return {
+                "status": "error",
+                "message": "Tidak ada review baru yang ditemukan.",
+            }
 
     except Exception as e:
         return {"status": "error", "message": str(e)}
