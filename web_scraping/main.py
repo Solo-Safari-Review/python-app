@@ -1,6 +1,8 @@
 # web-scrapping/main.py
 
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -29,14 +31,15 @@ def run_scraping():
         helpful_model = joblib.load(os.path.join(PREDICT_HELPFUL_DIR, "model_helpfulness_final.pkl"))
 
         # Headless options
-        options = webdriver.ChromeOptions()
-        options.add_argument("--headless=new")
+        options = Options()
+        options.binary_location = "/usr/bin/chromium-browser"  # <- lokasi Chromium
+        options.add_argument("--headless")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
-        options.add_argument("--window-size=1920,1080")
-        options.add_argument("user-agent=Mozilla/5.0 Chrome/120 Safari/537.36")
 
-        driver = webdriver.Chrome(options=options)
+        service = Service("/usr/bin/chromedriver")  # <- pastikan ini path ke chromedriver kamu
+
+        driver = webdriver.Chrome(service=service, options=options)
         maps_url = f"https://www.google.com/maps/search/solo+safari/"
         driver.get(maps_url)
 
