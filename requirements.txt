@@ -19,3 +19,4 @@ beautifulsoup4
 python-dateutil
 joblib
 requests
+python-dotenv

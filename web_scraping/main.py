@@ -14,9 +14,10 @@ from web_scraping.save import to_db
 from web_scraping.get_attributes import *
 from web_scraping.scrapping_function import *
 from web_scraping.preprocessing import *
-import json, joblib, os, time, mysql.connector
+import joblib, os, mysql.connector
 import pandas as pd
-import tempfile
+from dotenv import load_dotenv
+load_dotenv()
 
 
 def run_scraping():
@@ -67,10 +68,10 @@ def run_scraping():
 
         # Ambil timestamp terakhir dari DB
         conn = mysql.connector.connect(
-            host="localhost",
-            database="solo_safari_review",
-            user="root",
-            password=""
+            host=os.getenv("DB_HOST"),
+            database=os.getenv("DB_NAME"),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD")
         )
         cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM reviews ORDER BY id DESC LIMIT 1")
