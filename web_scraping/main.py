@@ -16,7 +16,7 @@ from web_scraping.scrapping_function import *
 from web_scraping.preprocessing import *
 import json, joblib, os, time, mysql.connector
 import pandas as pd
-from uuid import uuid4
+import tempfile
 
 
 def run_scraping():
@@ -32,14 +32,14 @@ def run_scraping():
         helpful_model = joblib.load(os.path.join(PREDICT_HELPFUL_DIR, "model_helpfulness_final.pkl"))
 
         # Headless options
-        options = Options()
-        options.binary_location = "/usr/bin/google-chrome"  # <- lokasi Chromium
+        options = webdriver.ChromeOptions()
+        options.binary_location = "/usr/bin/google-chrome"
         options.add_argument("--headless=new")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
+        options.add_argument(f"--user-data-dir={tempfile.mkdtemp()}")
 
-        service = Service("/usr/bin/chromedriver")  # <- pastikan ini path ke chromedriver kamu
-
+        service = Service("/usr/bin/chromedriver")
         driver = webdriver.Chrome(service=service, options=options)
         maps_url = f"https://www.google.com/maps/search/solo+safari/"
         driver.get(maps_url)
