@@ -32,11 +32,12 @@ def run_scraping():
 
         # Headless options
         options = Options()
-        options.binary_location = "/usr/bin/chromium-browser"  # <- lokasi Chromium
-        options.add_argument("--headless")
+        options.binary_location = "/snap/bin/chromium"  # <- lokasi Chromium
+        options.add_argument("--headless=new")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument("--remote-debugging-port=9222")  # ← tambahkan ini
+        options.add_argument("--disable-gpu")  # extra precaution
 
         service = Service("/usr/bin/chromedriver")  # <- pastikan ini path ke chromedriver kamu
 
