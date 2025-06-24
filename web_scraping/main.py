@@ -16,6 +16,7 @@ from web_scraping.scrapping_function import *
 from web_scraping.preprocessing import *
 import json, joblib, os, time, mysql.connector
 import pandas as pd
+from uuid import uuid4
 
 
 def run_scraping():
@@ -38,6 +39,8 @@ def run_scraping():
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument("--remote-debugging-port=9222")  # ← tambahkan ini
         options.add_argument("--disable-gpu")  # extra precaution
+        temp_profile_dir = f"/tmp/chrome-user-data-{uuid4()}"
+        options.add_argument(f"--user-data-dir={temp_profile_dir}")
 
         service = Service("/usr/bin/chromedriver")  # <- pastikan ini path ke chromedriver kamu
 
