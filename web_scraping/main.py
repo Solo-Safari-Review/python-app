@@ -34,15 +34,16 @@ def run_scraping():
 
         # Headless options
         options = Options()
-        options.binary_location = "/usr/bin/google-chrome"
+        # options.binary_location = "/usr/bin/google-chrome"
         options.add_argument('--headless=new')
         options.add_argument('--no-sandbox')
         options.add_argument('--disable-gpu')
         options.add_argument('--disable-dev-shm-usage')
         options.add_argument('--window-size=1920,1080')
 
-        service = Service("/usr/bin/chromedriver")
-        driver = webdriver.Chrome(service=service, options=options)
+        # service = Service("/usr/bin/chromedriver")
+        # driver = webdriver.Chrome(service=service, options=options)
+        driver = webdriver.Chrome(options=options)
         maps_url = f"https://www.google.com/maps/search/solo+safari/"
         driver.get(maps_url)
 
@@ -111,22 +112,20 @@ def run_scraping():
             data_reviews = []
 
             for review in reviews:
-                try:
-                    time_ = getTime(review)
-                    if time_ >= before_timestamp: continue
-                    if time_ < target_timestamp: on_target = True; break
-                    content = getReviewText(review)
-                    raw_content = content
-                    username = getUsername(review)
-                    is_local_guide, reviewer_number_of_reviews = getSubUserInfo(review)
-                    rating = getRating(review)
-                    likes = getLikes(review)
-                    image_count = getImageCount(review)
-                    rc1, rc2, rc3, rc4 = getReviewContexts(review)
-                    answer = getAnswer(review)
-                    is_extreme = getIsExtremeReview(rating)
-                except:
-                    continue
+                time_ = times[reviews.index(review)]
+                if time_ >= before_timestamp: continue
+                if time_ < target_timestamp: on_target = True; break
+                content = getReviewText(review)
+                if not content: continue  # skip if no content
+                raw_content = content
+                username = getUsername(review)
+                is_local_guide, reviewer_number_of_reviews = getSubUserInfo(review)
+                rating = getRating(review)
+                likes = getLikes(review)
+                image_count = getImageCount(review)
+                rc1, rc2, rc3, rc4 = getReviewContexts(review)
+                answer = getAnswer(review)
+                is_extreme = getIsExtremeReview(rating)
 
                 data_reviews.append({
                     "username": username,

@@ -1,11 +1,18 @@
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException
 from web_scraping.prep_func import *
 
 def getUsername(review):
     return review.find_element(By.CLASS_NAME, "d4r55").text
 
 def getSubUserInfo(review):
-    sub_user_info = review.find_element(By.CLASS_NAME, "RfnDt").text
+    try:
+        sub_user_info = review.find_element(By.CLASS_NAME, "RfnDt").text
+    except NoSuchElementException:
+        sub_user_info = None
+
+    is_local_guide = 0
+    reviewer_number_of_reviews = 0
 
     if sub_user_info is not None:
         sub_user_info = sub_user_info.split(" · ")
@@ -16,9 +23,6 @@ def getSubUserInfo(review):
         else:
             if "ulasan" in sub_user_info[0]:
                 reviewer_number_of_reviews = sub_user_info[0].rstrip(' ulasan')
-    else:
-        is_local_guide = 0
-        reviewer_number_of_reviews = 0
 
     return is_local_guide, reviewer_number_of_reviews
 
@@ -31,24 +35,22 @@ def getLikes(review):
 def getReviewContexts(review):
     review_contexts_elements = review.find_elements(By.CLASS_NAME, "RfDO5c")
 
-    review_context_1, review_context_2, review_context_3, review_context_4 = None, None, None, None
+    review_context_1 = review_context_2 = review_context_3 = review_context_4 = None
     if review_contexts_elements:
-        idx = 0
-        for review_context in review_contexts_elements:
-            if review_contexts_elements[idx].text == "Waktu kunjungan":
+        for idx, context in enumerate(review_contexts_elements):
+            if context.text == "Waktu kunjungan":
                 review_context_1 = review_contexts_elements[idx + 1].text
-            elif review_contexts_elements[idx].text == "Waktu antrean":
+            elif context.text == "Waktu antrean":
                 review_context_2 = review_contexts_elements[idx + 1].text
-            elif review_contexts_elements[idx].text == "Sebaiknya buat reservasi":
+            elif context.text == "Sebaiknya buat reservasi":
                 review_context_3 = review_contexts_elements[idx + 1].text
-            elif review_contexts_elements[idx].text == "Tempat parkir":
+            elif context.text == "Tempat parkir":
                 review_context_4 = review_contexts_elements[idx + 1].text
-            idx += 1
 
     return review_context_1, review_context_2, review_context_3, review_context_4
 
 def getAnswer(review):
-    answer_element = review.find_elements(By.CLASS_NAME, "CDe7pd") if review.find_elements(By.CLASS_NAME, "CDe7pd") else None
+    answer_element = review.find_elements(By.CLASS_NAME, "CDe7pd") or None
 
     answer = None
     if answer_element:
@@ -61,10 +63,13 @@ def getAnswer(review):
     return answer
 
 def getTime(review):
-    return time_to_timestamp(review.find_element(By.CLASS_NAME, "rsqaWe").text)
+    time_text_in_review = review.find_element(By.CLASS_NAME, "rsqaWe").text
+    if "Diedit" in time_text_in_review:
+        time_text_in_review = time_text_in_review.replace("Diedit ", "")
+    return time_to_timestamp(time_text_in_review)
 
 def getReviewText(review):
-    content_element = review.find_elements(By.CLASS_NAME, "MyEned") if review.find_elements(By.CLASS_NAME, "MyEned") else None
+    content_element = review.find_elements(By.CLASS_NAME, "MyEned") or None
 
     if content_element is not None:
         # expand review
@@ -80,7 +85,7 @@ def getReviewText(review):
 
 def getImageCount(review):
     image_count = 0
-    image_section = review.find_elements(By.CLASS_NAME, "KtCyie") if review.find_elements(By.CLASS_NAME, "KtCyie") else None
+    image_section = review.find_elements(By.CLASS_NAME, "KtCyie") or None
     if image_section is not None:
         rest_images = image_section[0].find_elements(By.CLASS_NAME, "Tap5If") if image_section[0].find_elements(By.CLASS_NAME, "Tap5If") else None
         if rest_images is not None:
