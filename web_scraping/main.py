@@ -210,4 +210,6 @@ def run_scraping():
         return {"status": "error", "message": str(e)}
 
     finally:
-        driver.quit()
+        if driver is not None:
+            print('Closing driver...')
+            driver.quit()
