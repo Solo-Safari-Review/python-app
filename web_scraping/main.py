@@ -34,6 +34,9 @@ def run_scraping():
         rating_xgb_model = joblib.load(os.path.join(PREDICT_RATING_DIR, "rating_xgboost.pkl"))
         helpful_model = joblib.load(os.path.join(PREDICT_HELPFUL_DIR, "model_helpfulness_final.pkl"))
 
+        driver = None
+        tmp_profile = tempfile.mkdtemp()
+
         # Headless options
         options = Options()
         options.binary_location = "/usr/bin/google-chrome"
@@ -45,9 +48,6 @@ def run_scraping():
         options.add_argument(f'--user-data-dir={tmp_profile}')
 
         service = Service("/usr/bin/chromedriver")
-
-        driver = None
-        tmp_profile = tempfile.mkdtemp()
 
         try:
             print('Initializing Chrome driver with temporary profile...')
