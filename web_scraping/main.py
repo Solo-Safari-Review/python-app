@@ -37,7 +37,6 @@ def run_scraping():
         helpful_model = joblib.load(os.path.join(PREDICT_HELPFUL_DIR, "model_helpfulness_final.pkl"))
 
         driver = None
-        # tmp_profile = tempfile.mkdtemp()
 
         # Headless options
         options = webdriver.ChromeOptions()
@@ -48,7 +47,8 @@ def run_scraping():
         options.add_argument('--disable-gpu')
         options.add_argument('--disable-dev-shm-usage')
         options.add_argument('--window-size=1920,1080')
-        # options.add_argument(f'--user-data-dir={tmp_profile}')
+        options.add_argument('--no-first-run')
+        options.add_argument('--no-default-browser-check')
 
         service = Service("/usr/bin/chromedriver")
 
@@ -228,7 +228,6 @@ def run_scraping():
             print("Cleaning up temporary profile...")
             if driver:
                 driver.quit()
-            # shutil.rmtree(tmp_profile, ignore_errors=True)
 
     except Exception as e:
         return {"status": "error", "message": str(e)}
