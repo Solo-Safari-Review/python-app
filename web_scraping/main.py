@@ -47,6 +47,7 @@ def run_scraping():
         maps_url = f"https://www.google.com/maps/search/solo+safari/"
         driver.get(maps_url)
 
+        print('Searching elements...')
         WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, "//div[contains(text(), 'Ulasan')]"))
         ).click()
@@ -66,6 +67,7 @@ def run_scraping():
         WebDriverWait(driver, 30).until(
             EC.presence_of_element_located((By.CLASS_NAME, "jJc9Ad"))
         )
+        print('Elements found, starting scraping...')
 
         # Ambil timestamp terakhir dari DB
         conn = mysql.connector.connect(
@@ -92,6 +94,7 @@ def run_scraping():
         frame = driver.find_element(By.CLASS_NAME, "DxyBCb")
         scroll_origin = ScrollOrigin.from_element(frame, 0, 0)
         target_found = False
+        print('Scraping reviews...')
 
         # Scroll dan kumpulkan review
         while not on_target:
@@ -145,6 +148,7 @@ def run_scraping():
                     "raw_content": raw_content
                 })
 
+        print('Scraping completed, processing data...')
         driver.quit()
 
         # filter berdasarkan username terakhir
@@ -187,6 +191,7 @@ def run_scraping():
             except:
                 item['is_helpful'] = 0
 
+        print('Saving data to database...')
         if data_reviews:
             to_db(data_reviews)
             return {
