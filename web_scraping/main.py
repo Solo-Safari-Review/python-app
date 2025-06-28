@@ -1,4 +1,6 @@
 # web-scrapping/main.py
+import os
+os.environ["XDG_CACHE_HOME"] = "/tmp/selenium_cache"
 
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -14,7 +16,7 @@ from web_scraping.save import to_db
 from web_scraping.get_attributes import *
 from web_scraping.scrapping_function import *
 from web_scraping.preprocessing import *
-import joblib, os, mysql.connector
+import joblib, mysql.connector
 import pandas as pd
 from dotenv import load_dotenv
 import tempfile
