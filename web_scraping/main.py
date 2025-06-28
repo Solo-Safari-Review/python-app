@@ -220,6 +220,7 @@ def run_scraping():
                 if not os.path.exists(ERROR_PATH):
                     os.makedirs(ERROR_PATH)
                 driver.save_screenshot(os.path.join(ERROR_PATH, f"error_screenshot{datetime.now().strftime('%Y%m%d%H%M%S')}.png"))
+            return {"status": "error", "message": str(e)}
 
         finally:
             print("Cleaning up temporary profile...")
