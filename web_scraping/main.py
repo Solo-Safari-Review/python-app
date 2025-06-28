@@ -35,17 +35,18 @@ def run_scraping():
         helpful_model = joblib.load(os.path.join(PREDICT_HELPFUL_DIR, "model_helpfulness_final.pkl"))
 
         driver = None
-        tmp_profile = tempfile.mkdtemp()
+        # tmp_profile = tempfile.mkdtemp()
 
         # Headless options
-        options = Options()
+        options = webdriver.ChromeOptions()
+
         options.binary_location = "/usr/bin/google-chrome"
         options.add_argument('--headless=new')
         options.add_argument('--no-sandbox')
         options.add_argument('--disable-gpu')
         options.add_argument('--disable-dev-shm-usage')
         options.add_argument('--window-size=1920,1080')
-        options.add_argument(f'--user-data-dir={tmp_profile}')
+        # options.add_argument(f'--user-data-dir={tmp_profile}')
 
         service = Service("/usr/bin/chromedriver")
 
@@ -117,13 +118,15 @@ def run_scraping():
                         else:
                             cleaned_time_list.append(time.text)
                     times = time_to_timestamp(cleaned_time_list)
-                    if any(time < target_timestamp for time in times): target_found = True
+                    if any(time < target_timestamp for time in times):
+                        target_found = True
+                        print('Target timestamp found, collecting reviews...')
 
                 reviews = driver.find_elements(By.CLASS_NAME, "jJc9Ad")
                 data_reviews = []
 
-                for review in reviews:
-                    time_ = times[reviews.index(review)]
+                for idx, review in enumerate(reviews):
+                    time_ = times[idx]
                     if time_ >= before_timestamp: continue
                     if time_ < target_timestamp: on_target = True; break
                     content = getReviewText(review)
@@ -210,11 +213,19 @@ def run_scraping():
                     "status": "error",
                     "message": "Tidak ada review baru yang ditemukan.",
                 }
+
+        except Exception as e:
+            if driver:
+                ERROR_PATH = os.path.join(PYTHON_APP_DIR, "error_logs")
+                if not os.path.exists(ERROR_PATH):
+                    os.makedirs(ERROR_PATH)
+                driver.save_screenshot(os.path.join(ERROR_PATH, f"error_screenshot{datetime.now().strftime('%Y%m%d%H%M%S')}.png"))
+
         finally:
             print("Cleaning up temporary profile...")
             if driver:
                 driver.quit()
-            shutil.rmtree(tmp_profile, ignore_errors=True)
+            # shutil.rmtree(tmp_profile, ignore_errors=True)
 
     except Exception as e:
         return {"status": "error", "message": str(e)}
