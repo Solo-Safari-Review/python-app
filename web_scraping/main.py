@@ -52,8 +52,8 @@ def run_scraping():
 
         try:
             print('Initializing Chrome driver with temporary profile...')
-            driver = webdriver.Chrome(service=service, options=options)
-            # driver = webdriver.Chrome(options=options)
+            # driver = webdriver.Chrome(service=service, options=options)
+            driver = webdriver.Chrome(options=options)
             maps_url = f"https://www.google.com/maps/search/solo+safari/"
             driver.get(maps_url)
 
