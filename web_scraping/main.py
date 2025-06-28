@@ -46,6 +46,8 @@ def run_scraping():
 
             service = Service("/usr/bin/chromedriver")
 
+            driver = None
+            print('Starting Chrome driver...')
             try:
                 driver = webdriver.Chrome(service=service, options=options)
                 # driver = webdriver.Chrome(options=options)
