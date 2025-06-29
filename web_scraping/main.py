@@ -121,7 +121,7 @@ def run_scraping():
                         else:
                             cleaned_time_list.append(time_element.text)
                     times = time_to_timestamp(cleaned_time_list)
-                    if any(time < target_timestamp for time in times) or time.time() - start > 60 * 4:
+                    if any(timestamp < target_timestamp for timestamp in times) or time.time() - start > 60 * 4:
                         target_found = True
                         print(f'Target timestamp found in {time.time() - start:.2f} seconds, collecting reviews...')
 
