@@ -19,8 +19,7 @@ from web_scraping.preprocessing import *
 import joblib, mysql.connector
 import pandas as pd
 from dotenv import load_dotenv
-import tempfile
-import shutil
+import time
 load_dotenv()
 
 
@@ -105,10 +104,12 @@ def run_scraping():
             frame = driver.find_element(By.CLASS_NAME, "DxyBCb")
             scroll_origin = ScrollOrigin.from_element(frame, 0, 0)
             target_found = False
+
             print('Starting to scroll and collect reviews...')
+            start = time.time()
 
             # Scroll dan kumpulkan review
-            while not on_target:
+            while not on_target:  # Batasi waktu scroll selama 4 menit
                 while not target_found:
                     ActionChains(driver).scroll_from_origin(scroll_origin, 0, 1500).perform()
                     time_list = driver.find_elements(By.CLASS_NAME, "rsqaWe");
@@ -120,9 +121,9 @@ def run_scraping():
                         else:
                             cleaned_time_list.append(time.text)
                     times = time_to_timestamp(cleaned_time_list)
-                    if any(time < target_timestamp for time in times):
+                    if any(time < target_timestamp for time in times) or time.time() - start > 60 * 4:
                         target_found = True
-                        print('Target timestamp found, collecting reviews...')
+                        print(f'Target timestamp found in {time.time() - start:.2f} seconds, collecting reviews...')
 
                 reviews = driver.find_elements(By.CLASS_NAME, "jJc9Ad")
                 data_reviews = []
