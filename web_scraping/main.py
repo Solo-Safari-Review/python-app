@@ -114,12 +114,12 @@ def run_scraping():
                     ActionChains(driver).scroll_from_origin(scroll_origin, 0, 1500).perform()
                     time_list = driver.find_elements(By.CLASS_NAME, "rsqaWe");
                     cleaned_time_list = []
-                    for time in time_list:
-                        if "Diedit" in time.text:
-                            cleaned_time = time.text.replace("Diedit ", "")
+                    for time_element in time_list:
+                        if "Diedit" in time_element.text:
+                            cleaned_time = time_element.text.replace("Diedit ", "")
                             cleaned_time_list.append(cleaned_time)
                         else:
-                            cleaned_time_list.append(time.text)
+                            cleaned_time_list.append(time_element.text)
                     times = time_to_timestamp(cleaned_time_list)
                     if any(time < target_timestamp for time in times) or time.time() - start > 60 * 4:
                         target_found = True
